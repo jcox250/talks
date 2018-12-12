@@ -1,0 +1,136 @@
+Go Modules
+
+joe@example.com
+http://url/
+@twitter_name
+
+* Plan
+Init module outside $GOPATH
+Add dependency
+Remove dependency
+Go Build
+Update dependency
+Go mod vendor
+GO111MODULE env var
+compatibility (module support for editors and tools like goimports gorename)
+breaking change (v2 path example)
+
+
+* What Are Go Modules?
+
+- Attempt to standardise and improve dependency management in go projects 
+- Released with go1.11 as an experimental opt in feature
+- Collection of relateed Go packages that are versioned together as a single unit
+- One module per repo
+
+: 
+: One repo is usually a module. So technopedia-common would be a module rather than having modules for each of the individual packages that are contained in technopedia-common
+
+
+* 
+    repo/
+    ├── go.mod
+    ├── bar
+    │   └── bar.go
+    └── foo
+        └── foo.go
+
+go.mod 
+
+    module github.com/my/thing
+
+    require (
+        github.com/some/dependency v1.2.3
+        github.com/another/dependency/v4 v4.0.0
+    )
+
+* 👋 GOPATH
+
+- Modules mean that we don't need to keep all our go code in the $GOPATH anymore
+- go.mod file defines the root of a module and lets the go toolchain know where everything is.
+
+- Can use moduels in the GOPATH but it's more of a headache
+- Add in something about GO111MODULE env
+
+: Can use modules inside the GOPATH by setting a GO111MODULE env but part of the desing behind modules was so that we didn't have to keep everything in GOPATH
+: go.mod file is defines the root of the module and lets the go toolchain know where everything is.
+
+* Minimum Version Selection
+
+- If go.mod file specifices a need for v1.2 then it will use that version even if v1.3 is available
+
+- If one of the packages you're using has a dependency on v1.2 but another has a dependency on v1.3 then Go uses v1.3 since it's the lowest version that satisfies the all the stated version needs
+
+- Won't update to minimum version automatically. Maintainers need to manually update to new versions as bugfixes/security patches are released
+
+
+
+* Semantic Import Versioning
+
+- Code opting into Go modules must follow semver with tags such as v1.2.3
+- leading v is required
+
+- Major veresion: increment for backwards-incompatible changes
+- Minor version: increment for new features
+- Patch version: increment for bug fixes
+
+
+    Packages intended for public use should try to maintain backwards compatibility as they evolve.
+    The Go 1 compatibility guidelines are a good reference here: don't remove exported names, 
+    encourage tagged composite literals, and so on.If different functionality is required, add a new
+    name instead of changing an old one. If a complete break is required, create a new package with a
+    new import path.
+
+    
+
+
+* Vendoring
+
+
+
+
+
+* Remove Dependency
+
+- Remove all references to the package in your code
+
+- Run
+    go mod tidy
+
+: go mod tidy prunes any packages that aren't being used from your go.mod file
+
+
+
+
+* Upgrade/Downgrade Dependency
+
+Get latest minor or patch releases
+
+    go get -u github.com/bdna/technopedia-common
+
+Get latest patch release
+
+    go get -u=patch github.com/bdna/technopedia-common
+
+Get specific version
+
+    go get github.com/bdna/technopedia-common@v1.6.2
+    go get github.com/bdna/technopedia-common@3702bed2
+
+: Go get allows version selection to be overriden by adding the @<version>
+: Can specify commit hash which lets you get the latest commit even if it doenst' have a semver tag
+
+* New Slide
+
+*** Sub-subsection
+
+Some More text
+
+  Preformatted text
+  is indented (however you like)
+
+Further Text, including invocations like:
+
+.caption _Gopher_ by [[https://www.instagram.com/reneefrench/][Renée French]]
+
+Again, more text
