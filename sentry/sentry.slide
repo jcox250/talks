@@ -20,23 +20,26 @@ Sentry
 - Exception monitoring/Error tracking tool
 - SDK that hooks itself into our runtime environment
 
-: It's an exception monitoring tool which we can use to get better visibility into errors that are happening in production code rather than only being able to look at logs that say an error happened and then having to seperately go and look in the code for where we're logging out where the error occured and then try and figure out what happened
-: Gives us a way to provide more context around errors and why they might have occured
+: It's an exception monitoring tool which we can use to get better visibility into errors that are happening in production code rather than only being able to look at logs and see that an error happened and then having to seperately go and look in the code for where we're logging out where the error occured and then try and figure out what went wrong.
+: It also gives us a way to provide more context around errors and why they might have occured
+: There's an SDK for your preferred languge of choice that you can use to hook into the apps runtime environment which can then be used to report/manually log events to Sentry
+: It's also got really good docs from my experience with it and seems to be the most popular solution for tracking errors
 
 
 
 # Slide
 * Features
 
-- Hosted and self hosted option
+- Hosted and self hosted options
 - Official Docker Image
 - Official Go SDK 
 - Source Maps
 - Stack Traces
+- Aggregate errors
 - Can display source code that's been compressed/minified or transpiled 
 
-: You can choose to go with a hosted or self hosted solution
-: Official Go SDK. Not quite as fleshed out as the SDK for some of the other languages but easily has enough features for us to use it and not feel like we're not getting everything we need
+: You can choose between a hosted solution or you can roll your own. 
+: There's an official Go SDK. Not quite as fleshed out as the SDK for some of the other languages but easily has enough features for us to use it and not feel like we're not getting everything we need
 : Source code is shown in the stack traces so you can view the code that threw the error in Sentry rather than having to reference logs and code in your editor
 : You can also filter to show just the app stack trace or the entire stack trace
 : Can even display source code that's been minified/compressed or transpiled. Not 100% if it can show source code for code that's been obfusticated.
@@ -46,11 +49,26 @@ Sentry
 # Slide
 * How we can use it
 
-- Manually logging events
-- Enriching Error Data
+.link https://docs.sentry.io/clients/go/usage/ Capturing errors, panics and events
+.image img/capture_error_doc.png
+.image img/capture_panic_doc.png
+
+: One of the ways that we can use it is to manually report errors. So whenever an error occurs we can log it to Sentry which creates a new issue group or adds the issue to an existing group if the error has already occured and been logged to sentry which allows us to see how many times the same error has happened.
+
+: CapureError and CaptureError and wait are too methods that we can use to do this but in most cases I think we'd want to use CaptureError since it isnt' blocking
+
+: There's also a CapturePanic functioin that you can use and if a panic occurs in your code it gets logged to Sentry and then your program continues running
+
+
+
+# Slide
+* 
+.link https://docs.sentry.io/clients/go/context/ Adding context to errors
+.image img/tags_example.png
+
 - Recording breadcrumbs
 
-: We can use it for manually reporting errors. So whenever an error occurs we can log it to Sentry which creates a new issue group or adds the issue to an existing group if the error has already occured and been logged to sentry which allows us to see how many times the same error has happened.
+: All of the capture functions provided by the API accept additional arguments for passing a map of tags and context data. We can use tags to catagorise errors and provide more information about the errors that happened. 
 
 : We can also record breadcrumbs which is the trail of events that happen before an error occurs. Breadcrumbs are different from directly recording events in that they're buffered until we send the next event which gives can give us even more context around why an error happened. It doesn't look like there's a high level method for sending Breadcrumbs with the Go API yet but there is a lower level type exposed for sending messages to Sentry that all the higher level methods seem to use.
 
@@ -162,10 +180,6 @@ Sentry
 
 
 
-# Slide
-* Tags
-
-.image img/tags_example.png
 
 : Very frontend specific example but we could also submit custom tags to provide more context so customer_id or tag by machine to see if a specific server is having issues
 : Tags give us a way to group/aggregate and search for bugs/issues in the Sentry UI easily
@@ -239,5 +253,11 @@ Sentry
 
 : Seem to be able to prepurchase the amount of events you think you'll use a month.
 : Then if you go over this amount you can still keep recieving events but you pay for them on demand
+
+
+#Slide
+* POC
+
+.link https://github.com/jcox15/sentry-poc github.com/jcox15/sentry-poc 
 
 
