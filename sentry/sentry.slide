@@ -1,0 +1,243 @@
+Sentry
+
+* Plan
+
+- What is sentry
+- Features (events, breadcrumbs)
+- API
+- How we could use it
+- Integration
+- Pricing/cost
+- code snippets / demos
+- Goa integration
+- Documentaion quality/ease of use
+
+
+
+# Slide
+* What is Sentry
+
+- Exception monitoring/Error tracking tool
+- SDK that hooks itself into our runtime environment
+
+: It's an exception monitoring tool which we can use to get better visibility into errors that are happening in production code rather than only being able to look at logs that say an error happened and then having to seperately go and look in the code for where we're logging out where the error occured and then try and figure out what happened
+: Gives us a way to provide more context around errors and why they might have occured
+
+
+
+# Slide
+* Features
+
+- Hosted and self hosted option
+- Official Docker Image
+- Official Go SDK 
+- Source Maps
+- Stack Traces
+- Can display source code that's been compressed/minified or transpiled 
+
+: You can choose to go with a hosted or self hosted solution
+: Official Go SDK. Not quite as fleshed out as the SDK for some of the other languages but easily has enough features for us to use it and not feel like we're not getting everything we need
+: Source code is shown in the stack traces so you can view the code that threw the error in Sentry rather than having to reference logs and code in your editor
+: You can also filter to show just the app stack trace or the entire stack trace
+: Can even display source code that's been minified/compressed or transpiled. Not 100% if it can show source code for code that's been obfusticated.
+
+
+
+# Slide
+* How we can use it
+
+- Manually logging events
+- Enriching Error Data
+- Recording breadcrumbs
+
+: We can use it for manually reporting errors. So whenever an error occurs we can log it to Sentry which creates a new issue group or adds the issue to an existing group if the error has already occured and been logged to sentry which allows us to see how many times the same error has happened.
+
+: We can also record breadcrumbs which is the trail of events that happen before an error occurs. Breadcrumbs are different from directly recording events in that they're buffered until we send the next event which gives can give us even more context around why an error happened. It doesn't look like there's a high level method for sending Breadcrumbs with the Go API yet but there is a lower level type exposed for sending messages to Sentry that all the higher level methods seem to use.
+
+
+# Slide
+* Enriching Error Data
+
+
+
+# Slide
+* Stack Traces
+
+.image img/stacktrace_1.png 600 700
+
+
+# Slide
+* 
+
+.image img/stacktrace_2.png
+
+
+# Slide
+* Examples
+
+.code code/http-examples/http-panic-wrap.go /START OMIT/,/END OMIT/
+
+
+
+# Slide
+* 
+
+.image img/stacktrace_panic.png
+
+
+
+# Slide
+* Goa Example
+
+.code code/goa-examples/raven-capture-panic.go /START OMIT/,/END OMIT/
+
+
+
+# Slide
+* 
+
+.image img/goa_raven_capture_panic.png
+
+
+
+# Slide
+* Monitoring Interface
+
+    import raven "github.com/getsentry/raven-go"
+
+    type ExceptionMonitor interface {
+        CaptureError(error)
+        CapturePanic(func())
+        CaptureMessage(string)
+    }
+
+    type Implementation struct {
+        sentry *raven.Client
+        tags map[string]string
+    }
+
+    func (i *Implementation) CaptureError(e error) { 
+        sentry.CaptureError(e, i.tags)
+    }
+
+    func (i *Implementation) CapturePanic(fn func()) { 
+        sentry.CapturePanic(fn, i.tags)
+    }
+
+    func (i *Implementation) CaptureMessage(msg string) { 
+        sentry.CaptureMessage(msg)
+    }
+
+
+
+
+# Slide
+* Extend Logger Interface
+
+    type Logger interface {
+        Log(string, map[string]interface{})
+        LogError(error)
+    }
+
+    type Implementation struct {
+        Logger *logrus.Entry
+        sentry *raven.Client
+        tags map[string]string
+    }
+
+    func (i *Implementation) Log(s string, data map[string]interface{}) {
+        var fields logrus.Fields
+        fields = data
+        i.Logger.WithFields(fields).Debug(message)
+        i.sentry.CaptureMessage(s, i.tags) 
+    }
+
+    func (i *Implementation) LogError(s string, data map[string]interface{}) {
+        var fields logrus.Fields
+        fields = data
+        i.Logger.WithFields(fields).Debug(message)
+        i.sentry.CaptureError(s, i.tags) 
+    }
+
+
+
+
+# Slide
+* Tags
+
+.image img/tags_example.png
+
+: Very frontend specific example but we could also submit custom tags to provide more context so customer_id or tag by machine to see if a specific server is having issues
+: Tags give us a way to group/aggregate and search for bugs/issues in the Sentry UI easily
+
+- Hosted or self hosted
+
+: 
+: 
+
+
+
+# Slide
+* Integration
+
+.link https://sentry.io/integrations/github/ GitHub/GitHub Enterprise
+.link https://sentry.io/integrations/jira/ Jira
+.link https://sentry.io/integrations/pagerduty/ Pager Duty
+
+: Also can set it up to send you emails when stuff happens
+: Currently there's no integration for Teams but does have integration for slack, hipchat & Teamwork...
+
+* Github Integration
+
+- Release tracking
+- Link to GitHub issues
+- Deploy emails
+- Suggested assignees for errors based on commit history
+- Can resolve issues on Sentry by including the ID in your commit message
+
+: You can get alerts whenever a deployment introduces an error 
+: It will suggest who the issue should be assigned to based (assuming this is based on the name associated with the commit that caused the issue)
+: Whenever issues are resolved you can add the Sentry issue ID to your commit message to mark it as resolved
+
+
+
+
+
+# Slide
+* Jira Integration
+
+- Create Jira issues from Sentry issues
+- Synchronisation between comments, assigneess and status updates
+
+: Whenever a new issue pops up in Sentry we can create a Jira ticket from it by clicking a button in Sentry
+: Comments, assigness and ticket status are synchronised across Jira and Sentry for us
+: Resolving an issue in Sentry will mark it as resolved in Jira and vice versa
+
+
+
+
+# Slide
+* Pager Duty Integration
+
+- Sentry can send alerts for issues to pager duty
+
+: Any issues that Sentry gets can be forwarded on to Pager Duty
+
+
+
+
+# Slide
+* Pricing & Limits
+
+- Developer - free
+- Team - $26/month 100k, 500k, 1.5M 3M+ events a month
+- Business - $80/month 100k, 500k, 1.5M 3M+ events a month
+- Enterprise (Contact them)
+
+.link https://sentry.io/pricing/ pricing and limits
+
+
+: Seem to be able to prepurchase the amount of events you think you'll use a month.
+: Then if you go over this amount you can still keep recieving events but you pay for them on demand
+
+
