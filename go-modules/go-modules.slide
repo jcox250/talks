@@ -12,6 +12,9 @@ Go Build
 Update dependency
 Go mod vendor
 GO111MODULE env var
+GOFLAGS env var
+Tour of go.mod file
+GOCACHE 
 compatibility (module support for editors and tools like goimports gorename)
 breaking change (v2 path example)
 
@@ -20,11 +23,11 @@ breaking change (v2 path example)
 
 - Attempt to standardise and improve dependency management in go projects 
 - Released with go1.11 as an experimental opt in feature
-- Collection of relateed Go packages that are versioned together as a single unit
-- One module per repo
+- Collection of related Go packages that are versioned together as a single unit with a go.mod file listing required modules
 
-: 
+: So as everyone knows dependency management in Go is a massive pain and modules are 
 : One repo is usually a module. So technopedia-common would be a module rather than having modules for each of the individual packages that are contained in technopedia-common
+: Although you cna have multiple modules per repo if you want so if we wanted we could have a middleware package module and logging module
 
 
 * 
@@ -44,16 +47,29 @@ go.mod
         github.com/another/dependency/v4 v4.0.0
     )
 
+
+
+
+
+
 * 👋 GOPATH
 
-- Modules mean that we don't need to keep all our go code in the $GOPATH anymore
+- Don't need to use the gopath anymore
 - go.mod file defines the root of a module and lets the go toolchain know where everything is.
 
 - Can use moduels in the GOPATH but it's more of a headache
 - Add in something about GO111MODULE env
 
+: You can use modules inside the gopath but as it's an experimental opt in feature you'll need to set the GO111MODULE environment variable
+: But part of the point of modules is to move away from the GOPATH
+
 : Can use modules inside the GOPATH by setting a GO111MODULE env but part of the desing behind modules was so that we didn't have to keep everything in GOPATH
-: go.mod file is defines the root of the module and lets the go toolchain know where everything is.
+: go.mod file kind of replaces GOPATH in that it lets the go toolchain know where everything is
+
+
+
+
+
 
 * Minimum Version Selection
 
@@ -65,27 +81,20 @@ go.mod
 
 
 
+
 * Semantic Import Versioning
 
 - Code opting into Go modules must follow semver with tags such as v1.2.3
-- leading v is required
 
-- Major veresion: increment for backwards-incompatible changes
-- Minor version: increment for new features
-- Patch version: increment for bug fixes
-
+.image resources/images/impver.png
 
     Packages intended for public use should try to maintain backwards compatibility as they evolve.
     The Go 1 compatibility guidelines are a good reference here: don't remove exported names, 
-    encourage tagged composite literals, and so on.If different functionality is required, add a new
+    encourage tagged composite literals, and so on. If different functionality is required, add a new
     name instead of changing an old one. If a complete break is required, create a new package with a
     new import path.
 
     
-
-
-* Vendoring
-
 
 
 
@@ -98,6 +107,7 @@ go.mod
     go mod tidy
 
 : go mod tidy prunes any packages that aren't being used from your go.mod file
+
 
 
 
@@ -120,17 +130,48 @@ Get specific version
 : Go get allows version selection to be overriden by adding the @<version>
 : Can specify commit hash which lets you get the latest commit even if it doenst' have a semver tag
 
-* New Slide
 
-*** Sub-subsection
 
-Some More text
 
-  Preformatted text
-  is indented (however you like)
 
-Further Text, including invocations like:
+* GO111MODULE
 
-.caption _Gopher_ by [[https://www.instagram.com/reneefrench/][Renée French]]
+    export GO111MODULE=on
+    export GO111MODULE=off
+    export GO111MODULE=auto
 
-Again, more text
+: If you're working outside the GOPATH you'll want to leave this environment variable unset or set to auto
+: If you're working inside the GOPATH you'll want to set it to on to make stuff 'module' aware
+
+
+
+
+
+* GOFLAGS
+    
+- Used to apply default settings to all go commands
+
+    export GOFLAGS=mod-vendor
+
+: So if we set the env var to this it means that whenever we run go build it will use the dependencies in the vendor directory
+
+
+
+
+
+
+* GOCACHE
+
+- Directory where the go command stores cached information for reuse in future builds
+
+
+
+
+
+
+* Resources
+
+.link https://github.com/golang/go/wiki/Modules
+.link https://dave.cheney.net/2018/07/14/taking-go-modules-for-a-spin
+.link https://www.youtube.com/watch?v=F8nrpe0XWRg&list=PLq2Nv-Sh8EbbIjQgDzapOFeVfv5bGOoPE&index=3&t=0s Russ Cox - Go with Version
+.link https://research.swtch.com/vgo vgo blog series 
