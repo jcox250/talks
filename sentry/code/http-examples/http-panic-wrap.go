@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	raven "github.com/getsentry/raven-go"
 )
 
 // START OMIT
@@ -15,10 +13,10 @@ type Tester interface {
 	DoSomething() error
 }
 
-func init() { raven.SetDSN(`<DSN>`) }
+func init() { raven.SetDSN(`<DSN>`) } // HLraven
 
 func main() {
-	http.HandleFunc(`/hello-world`, raven.RecoveryHandler(handler))
+	http.HandleFunc(`/hello-world`, raven.RecoveryHandler(handler)) // HLraven
 	log.Fatal(http.ListenAndServe(`:7000`, nil))
 }
 
@@ -26,10 +24,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	var notImplemented Tester
 
 	if err := notImplemented.DoSomething(); err != nil {
-		raven.CaptureError(err, tags)
+		raven.CaptureError(err, tags) // HLraven
 	}
 
-	raven.CaptureMessage(`it's all good`, tags)
+	raven.CaptureMessage(`it's all good`, tags) // HLraven
 	fmt.Fprintf(w, `hello world`)
 }
 

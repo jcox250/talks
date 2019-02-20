@@ -62,38 +62,35 @@ Sentry
 
 
 # Slide
-* 
-.link https://docs.sentry.io/clients/go/context/ Adding context to errors
-.image img/tags_example.png
-
-- Recording breadcrumbs
-
-: All of the capture functions provided by the API accept additional arguments for passing a map of tags and context data. We can use tags to catagorise errors and provide more information about the errors that happened. 
-
-: We can also record breadcrumbs which is the trail of events that happen before an error occurs. Breadcrumbs are different from directly recording events in that they're buffered until we send the next event which gives can give us even more context around why an error happened. It doesn't look like there's a high level method for sending Breadcrumbs with the Go API yet but there is a lower level type exposed for sending messages to Sentry that all the higher level methods seem to use.
-
-
-# Slide
 * Enriching Error Data
 
+.link https://docs.sentry.io/clients/go/context/ Add context to errors
+.link https://sentry.io/organizations/flexera/discover/ Filter based on tags
+.link https://sentry.io/features/breadcrumbs/ Breadcrumbs
+.image img/tags_example.png
+
+
+: All of the capture functions provided by the API accept additional arguments for passing a map of tags and context data. We can use tags to catagorise errors and provide more information about the errors that happened. 
+: We can also record breadcrumbs which is the trail of events that happen before an error occurs. Breadcrumbs are different from directly recording events in that they're buffered until we send the next event which gives can give us even more context around why an error happened. It doesn't look like there's a high level method for sending Breadcrumbs with the Go API yet but there is a lower level type exposed for sending messages to Sentry that all the higher level methods seem to use.
+: Seems like the breadcrumbs would be most useful for the FE side of things though because you're able record the users interaction so you can record the clicks and inputs that to a page before an error happened.
+
+
+: Very frontend specific example but we could also submit custom tags to provide more context so customer_id or tag by machine to see if a specific server is having issues
+: Tags give us a way to group/aggregate and search for bugs/issues in the Sentry UI easily
+
+
+
+
+
 
 
 # Slide
-* Stack Traces
+* Example
 
-.image img/stacktrace_1.png 600 700
-
-
-# Slide
-* 
-
-.image img/stacktrace_2.png
+.code code/http-examples/http-panic-wrap.go /START OMIT/,/END OMIT/ HLraven
 
 
-# Slide
-* Examples
 
-.code code/http-examples/http-panic-wrap.go /START OMIT/,/END OMIT/
 
 
 
@@ -104,24 +101,12 @@ Sentry
 
 
 
-# Slide
-* Goa Example
 
-.code code/goa-examples/raven-capture-panic.go /START OMIT/,/END OMIT/
-
-
-
-# Slide
-* 
-
-.image img/goa_raven_capture_panic.png
 
 
 
 # Slide
 * Monitoring Interface
-
-    import raven "github.com/getsentry/raven-go"
 
     type ExceptionMonitor interface {
         CaptureError(error)
@@ -129,33 +114,25 @@ Sentry
         CaptureMessage(string)
     }
 
-    type Implementation struct {
-        sentry *raven.Client
+    type Sentry struct {
+        client *raven.Client
         tags map[string]string
     }
 
-    func (i *Implementation) CaptureError(e error) { 
-        sentry.CaptureError(e, i.tags)
+    func NewSentry(dsn string, tags map[string]string) *Sentry {
+        return &Sentry{
+            client: raven.NewClient(dsn),
+            tags: tags,
+        }
     }
 
-    func (i *Implementation) CapturePanic(fn func()) { 
-        sentry.CapturePanic(fn, i.tags)
-    }
 
-    func (i *Implementation) CaptureMessage(msg string) { 
-        sentry.CaptureMessage(msg)
-    }
 
 
 
 
 # Slide
-* Extend Logger Interface
-
-    type Logger interface {
-        Log(string, map[string]interface{})
-        LogError(error)
-    }
+* Extend/Add New Logger Implementation
 
     type Implementation struct {
         Logger *logrus.Entry
@@ -164,16 +141,12 @@ Sentry
     }
 
     func (i *Implementation) Log(s string, data map[string]interface{}) {
-        var fields logrus.Fields
-        fields = data
-        i.Logger.WithFields(fields).Debug(message)
+        // Normal logging logic
         i.sentry.CaptureMessage(s, i.tags) 
     }
 
     func (i *Implementation) LogError(s string, data map[string]interface{}) {
-        var fields logrus.Fields
-        fields = data
-        i.Logger.WithFields(fields).Debug(message)
+        // Normal logging logic
         i.sentry.CaptureError(s, i.tags) 
     }
 
@@ -181,13 +154,45 @@ Sentry
 
 
 
-: Very frontend specific example but we could also submit custom tags to provide more context so customer_id or tag by machine to see if a specific server is having issues
-: Tags give us a way to group/aggregate and search for bugs/issues in the Sentry UI easily
 
-- Hosted or self hosted
 
-: 
-: 
+
+
+
+
+# Slide
+* Goa Example
+
+.code code/goa-examples/raven-capture-panic.go /START OMIT/,/END OMIT/ HLmonitor
+
+
+
+
+
+
+
+# Slide
+* Stack Traces
+
+.image img/stacktrace_1.png 600 700
+
+: So when you do get errors whenever you click on them you can view the stack trace and you can choose betweeen viewing the entire stack trace which will show a stack trace for
+your framework and third party lib files as well as any of your apps stack that was touched. But you can also filter it to show only your app code to make it even easier to see which parts of your code went wrong.
+
+
+
+
+
+
+
+
+# Slide
+* 
+
+.image img/stacktrace_2.png
+
+
+
 
 
 
@@ -198,8 +203,8 @@ Sentry
 .link https://sentry.io/integrations/jira/ Jira
 .link https://sentry.io/integrations/pagerduty/ Pager Duty
 
-: Also can set it up to send you emails when stuff happens
-: Currently there's no integration for Teams but does have integration for slack, hipchat & Teamwork...
+: Currently has integration for Gituhub, Jira and Pager Duty but not Teams
+: You can also configure email notifications to come through whenever bad things happen
 
 * Github Integration
 
