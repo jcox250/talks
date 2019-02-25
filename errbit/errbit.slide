@@ -1,0 +1,168 @@
+Errbit
+
+
+
+
+
+* Plan
+
+- Rightscale lib (but has goa dependency)
+- Can log panics, errors and messages like Sentry
+- Doesn't look like it has the same GitHub/Jira integration
+- Can't assign users to issues
+- Gives you a stack trace but doesn't show you the block of code the way Sentry does
+- Groups errors if they occur multiple times
+- Hosted (have to setup and maintain ourselves but free)
+- Teams Integration (RightScale)
+- Docs really just a readme
+- Doesn't give us same FE capabilities (if any?)
+- Can't track commits/releases the same way
+- If we ever changed development languages in the future a new lib would have to be written. Sentry already supports dozens of languages
+
+
+
+
+
+
+
+
+# Slide
+* What is Errbit
+
+- Open source error catcher
+
+: It's a tool similar to sentry for collecting and managing errors that happen in our applications
+: So we can put code into our app to send errors to Errbit whenever they occur and wrap http handlers so that if panics occur they'll be sent off to errbit as well and captured
+
+
+
+
+
+
+
+
+
+# Slide
+* Features
+
+- Self Hosted (Ruby & Mongo)
+- Stack traces
+- Multiple users
+- Airbrake API compliant
+- Group & merge errors
+- Shows user information in error reports
+
+
+: No hosted option so we'd have to setup and maintain our own instance. It's a ruby app with a mongodb so whatever server we're running it on needs ruby and mongo
+: Provides a stack trace of errors/panics that occur so it's easier to track them down. 
+: You can add multiple users and have users 'watching' certain apps so that they get notifcations whenever there's an error.
+: It's airbrake API compliant which is handy if you're already using Airbrake which we aren't
+: If the same error occurs multiple times rather than logging each one as individual events it groups them all under the one event. You can also manually merge errors in the UI that you feel should be related.
+: We're also able to configure how errbit decides to group error messages. By default it uses the notice's class, message, stacktrace, component, action and environment to generate a unique fingerprint for every notice
+: Although we're able to group errors 
+
+
+
+
+
+
+
+
+
+
+
+
+# Slide
+* How we can use it
+
+.link https://github.com/rightscale/microv2/tree/master/errbit RightScale microv2
+
+.image img/microv2_errbit_api.png
+
+: Rightscale have a repo with a bunch of helper packages for building goa service and one of these is an errbit package
+
+
+
+
+
+
+
+
+# Slide
+* 
+
+.image img/errbit_mw_def.png
+.image img/errbit_mw_impl.png
+
+
+: Gives us the ability to add errbit middleware to our services and provides methods for creating errbit notifications
+: Although downside is that this repo has a dependency on Goa. So if we ever wanted to use it in a non goa service (i.e adding to already existing services) we'd be adding Goa as a dependency for all our services
+
+
+
+
+
+
+
+
+# Slide
+* Stacktrace
+
+
+.image img/errbit_stacktrace.png
+
+
+
+
+
+
+
+# Slide
+* Integration
+
+- Github
+- Webhook
+.image img/errbit_gh_link.png
+
+
+: Seems like you can link a Github repo and branch to an app on Errbit but doesn't provide same level of integration  as sentry which would let us resolve issues by mentioning them in our commits
+: RightScale have it integrated with teams which i'm assuming is happening through a webhook
+: No Jira integration whereas in Sentry we would be able to create Jira tickets from issues in Sentry and have them marked as resolved when our Jira ticket is marked as done
+
+
+
+
+
+# Slide
+* Pricing
+
+- Free
+
+: Completely free to use so you only have the cost of whatever server you're running it on and maybe whatever mongo costs (don't know if you can use it for free)?
+
+
+
+
+
+# Slide
+* Errbit vs Sentry
+
+** Team Errbit
+- Error consoloidation
+- Slightly more secure 
+- Could be cheaper than a hosted solution
+
+
+** Team Sentry
+- Error consoloidation
+- Supports a range of languages
+- Was significantly quicker to get up and running
+- Better integration with tools like Github, Jira & PagerDuty
+
+
+
+
+
+
+
+
