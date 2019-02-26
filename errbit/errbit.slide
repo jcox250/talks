@@ -107,7 +107,7 @@ Errbit
 * Stacktrace
 
 
-.image img/errbit_stacktrace.png
+.image img/errbit_stacktrace.png 250 700
 
 
 
@@ -122,13 +122,13 @@ Errbit
 * Integration
 
 - Github
-- Webhook
-.image img/errbit_gh_link.png
+- Webhooks
 
 
-: Seems like you can link a Github repo and branch to an app on Errbit but doesn't provide same level of integration  as sentry which would let us resolve issues by mentioning them in our commits
-: RightScale have it integrated with teams which i'm assuming is happening through a webhook
+: The extent of the Github integration seems to be the ability to add a link to a repo to an app on Errbit. So whenever you're viewing the app on errbit you can easily jump to the repo. Or you're able to add a link to a user so that you can jump to their GitHub account. But it doesn't have the same level of integration that Sentry has we're you're able to track commits and releases and resolve issues by tagging them in your git commits
+: It has webhooks so we setup Teams notifications in a channel for it
 : No Jira integration whereas in Sentry we would be able to create Jira tickets from issues in Sentry and have them marked as resolved when our Jira ticket is marked as done
+: No featured PagerDuty integration but I don't know if there's a way that you can just use a webhook or not with pager duty
 
 
 
@@ -160,10 +160,10 @@ Errbit
 - Better docs
 - Official & Community supported SDKs for a range of languages/frameworks
 - Better integration with tools like Github, Jira & PagerDuty
-- Was significantly quicker to get up and running (15 minutes)
+- Easy/quick to get going with 
 - Better query functionality
 - Dashboards
-- Better FE capabilities
+- Better frontend capabilities
 
 
 
