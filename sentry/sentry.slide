@@ -229,9 +229,14 @@ your framework and third party lib files as well as any of your apps stack that 
 .link https://sentry.io/integrations/github/ GitHub/GitHub Enterprise
 .link https://sentry.io/integrations/jira/ Jira
 .link https://sentry.io/integrations/pagerduty/ Pager Duty
+Webhooks
 
-: Currently has integration for Gituhub, Jira and Pager Duty but not Teams
+: Currently has integration for Gituhub, Jira, Pager Duty and Teams.
+: Can setup teams notifications using a webhook
 : You can also configure email notifications to come through whenever bad things happen
+
+
+
 
 * Github Integration
 
@@ -268,6 +273,9 @@ your framework and third party lib files as well as any of your apps stack that 
 - Sentry can send alerts for issues to pager duty
 
 : Any issues that Sentry gets can be forwarded on to Pager Duty
+
+
+
 
 
 
