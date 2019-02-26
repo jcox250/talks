@@ -23,12 +23,43 @@ Sentry
 - Stack Traces
 - Aggregate errors
 - Can display source code that's been compressed/minified or transpiled 
+- Dashboards
 
 : You can choose between a hosted solution or you can roll your own. 
 : There's an official Go SDK. Not quite as fleshed out as the SDK for some of the other languages but easily has enough features for us to use it and not feel like we're not getting everything we need
 : Source code is shown in the stack traces so you can view the code that threw the error in Sentry rather than having to reference logs and code in your editor
 : You can also filter to show just the app stack trace or the entire stack trace
 : Can even display source code that's been minified/compressed or transpiled. Not 100% if it can show source code for code that's been obfusticated.
+
+
+
+
+
+
+
+
+# Slide
+* Official SDKs
+
+.image img/sentry_official_sdks.png
+
+
+
+
+
+
+
+
+
+# Slide
+* Community supports SDKs
+
+.image img/sentry_community_sdks.png
+
+
+
+
+
 
 
 
@@ -180,6 +211,16 @@ your framework and third party lib files as well as any of your apps stack that 
 
 
 
+
+
+
+# Slide
+* 
+
+.image img/sentry_dashboard.png
+
+
+: https://sentry.io/organizations/flexera/dashboards/?project=1396608&statsPeriod=14d&utc=false
 
 
 # Slide
