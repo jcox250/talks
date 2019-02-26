@@ -1,0 +1,186 @@
+Errbit
+
+
+
+
+
+* Plan
+
+- Rightscale lib (but has goa dependency)
+- Can log panics, errors and messages like Sentry
+- Doesn't look like it has the same GitHub/Jira integration
+- Can't assign users to issues
+- Gives you a stack trace but doesn't show you the block of code the way Sentry does
+- Groups errors if they occur multiple times
+- Hosted (have to setup and maintain ourselves but free)
+- Teams Integration (RightScale)
+- Docs really just a readme
+- Can't track commits/releases the same way
+
+
+
+
+
+
+
+
+# Slide
+* What is Errbit
+
+- Open source error catcher
+
+: It's a tool similar to sentry for collecting and managing errors that happen in our applications
+: So we can put code into our app to send errors to Errbit whenever they occur and wrap http handlers so that if panics occur they'll be sent off to errbit as well and captured
+
+
+
+
+
+
+
+
+
+# Slide
+* Features
+
+- Self Hosted (Rails app & Mongo)
+- Official Docker Image
+- Stack traces
+- Multiple users
+- Airbrake API compliant
+- Group & merge errors
+- Shows user information in error reports
+
+
+: No hosted option so we'd have to setup and maintain our own instance but there's an official docker image.
+: Provides a stack trace of errors/panics that occur so it's easier to track them down. 
+: You can add multiple users and have users 'watching' certain apps so that they get notifcations whenever there's an error. Although you aren't able to assign users to issues the same way you can with Sentry
+: It's airbrake API compliant which is handy if you're already using Airbrake which we aren't
+: If the same error occurs multiple times rather than logging each one as individual events it groups them all under the one event. You can also manually merge errors in the UI that you feel should be related.
+: We're also able to configure how errbit decides to group error messages. By default it uses the notice's class, message, stacktrace, component, action and environment to generate a unique fingerprint for every notice
+
+
+
+
+
+
+
+
+
+
+
+# Slide
+* How we can use it
+
+.link https://github.com/rightscale/microv2/tree/master/errbit RightScale microv2
+
+.image img/microv2_errbit_api.png
+
+
+: Rightscale have a repo with a bunch of helper packages for building goa service and one of these is an errbit package so we would just be able to use this rather than having to write our own library around the Sentry Go SDK.
+: Although I do think there are some downsides to us using this library one of which is it has a dependency on Goa. So if we did go with Errbit and wanted to use this library in already existingservices we'd be pulling down Goa as a dependency even though the service doesn't use Goa. 
+
+
+
+
+
+
+
+
+# Slide
+* 
+
+.image img/errbit_mw_def.png
+.image img/errbit_mw_impl.png
+
+
+: Like Sentry which lets us wrap middleware around our handlers the errbit library that RightScale have also lets us add middleware and it already integrates with Goa. 
+
+
+
+
+
+
+
+
+# Slide
+* Stacktrace
+
+
+.image img/errbit_stacktrace.png 250 700
+
+
+
+: Whenever errors are logged the stacktrace is also sent up so you can easily see where the error occured
+
+
+
+
+
+
+# Slide
+* Integration
+
+- Github
+- Webhooks
+
+
+: The extent of the Github integration seems to be the ability to add a link to a repo to an app on Errbit. So whenever you're viewing the app on errbit you can easily jump to the repo. Or you're able to add a link to a user so that you can jump to their GitHub account. But it doesn't have the same level of integration that Sentry has we're you're able to track commits and releases and resolve issues by tagging them in your git commits
+: It has webhooks so we setup Teams notifications in a channel for it
+: No Jira integration whereas in Sentry we would be able to create Jira tickets from issues in Sentry and have them marked as resolved when our Jira ticket is marked as done
+: No featured PagerDuty integration but I don't know if there's a way that you can just use a webhook or not with pager duty
+
+
+
+
+
+# Slide
+* Pricing
+
+- Free
+
+: Completely free to use so you only have the cost of whatever server you're running it on 
+
+
+
+
+
+# Slide
+* Errbit vs Sentry
+
+*Errbit*
+
+- Could be cheaper than a hosted solution
+- Existing library with Goa integration
+- Already used by RightScale 
+
+
+*Sentry*
+
+- Better docs
+- Official & Community supported SDKs for a range of languages/frameworks
+- Better integration with tools like Github, Jira & PagerDuty
+- Easy/quick to get going with 
+- Better query functionality
+- Dashboards
+- Better frontend capabilities
+
+
+
+
+: Looking at the straight up monthly cost of errbit compared to a hosted solution it's probably cheaper. But by the time you factor the time spent by engineers setting up, managing and configuring it will it be cheaper?
+: There's already an existing library that RightScale have been using with Errbit that we could make use of which could save us some time initially
+: The fact that it's already used by RightScale means off the bat there's probably more knowledge about Errbit than Sentry
+
+
+
+: For Sentry I think the fact that it has official SDKs for lots of different languages/frameworks is a good thing. Means if we ever do change our development language then we won't have a write a library for that language to interact with errbit
+: I also think that the better Github & Jira integrations are clear benefits over what errbit provides
+: Better frontend support out of the box also feels like a benefit
+
+: tldr, Sentry seems to be able to do everything errbit does with what I think are beneficial additional features and there might be a bit more additional in getting something of value done that we can use in production apps but I think in the long run it's worth it
+
+
+
+
+

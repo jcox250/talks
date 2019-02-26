@@ -3,8 +3,8 @@
 To view the slides in this repo you need to have the golang `present` tool installed on your machine.
 
 ```
-$ go get golang.org/x/net
-$ go get golang.org/x/tools
+$ go get golang.org/x/net/...
+$ go get golang.org/x/tools/...
 $ go install golang.org/x/tools/cmd/present
 ```
 
