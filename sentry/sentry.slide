@@ -6,10 +6,10 @@ Sentry
 - Exception monitoring/Error tracking tool
 - SDK that hooks itself into our runtime environment
 
-: It's an exception monitoring tool which we can use to get better visibility into errors that are happening in production code rather than only being able to look at logs and see that an error happened and then having to seperately go and look in the code for where we're logging out where the error occured and then try and figure out what went wrong.
+: It's an exception monitoring tool which we can use to get better visibility into errors that are happening in our services rather than only being able to look at logs to see what happened and then having to seperately go and look in the code for where we've written the logs that are coming out.
 : It also gives us a way to provide more context around errors and why they might have occured
-: There's an SDK for your preferred languge of choice that you can use to hook into the apps runtime environment which can then be used to report/manually log events to Sentry
-: It's also got really good docs from my experience with it and seems to be the most popular solution for tracking errors
+: There's an SDK that hooks into the apps runtime environment which can then be used to report/manually log events to Sentry
+: It's also seems to be the most popular solution for tracking errors
 
 
 
@@ -46,17 +46,22 @@ Sentry
 
 
 
+: So this is a list of all the SDKs that are officially maintained by the Sentry team 
+: So as well as a Go SDK there are also offical React and C# SDKs. Which means that the teams that are still using C# would be able to easily make use of Sentry and the frontend applications would be able to record their errors to sentry too without us having to build our own libraries for each language/framework
+: There's also a Django one so it would be possible to add sentry monitoring to something like LMS relatively easily.
 
 
 
 
 
 # Slide
-* Community supports SDKs
+* Community supported SDKs
 
 .image img/sentry_community_sdks.png
 
 
+
+: And then this is a list of the community supported SDKs and there's a Kubernetes one which could be useful given it seems like we're going to end up using kubernetes?
 
 
 
@@ -72,7 +77,7 @@ Sentry
 
 : One of the ways that we can use it is to manually report errors. So whenever an error occurs we can log it to Sentry which creates a new issue group or adds the issue to an existing group if the error has already occured and been logged to sentry which allows us to see how many times the same error has happened.
 
-: CapureError and CaptureError and wait are too methods that we can use to do this but in most cases I think we'd want to use CaptureError since it isnt' blocking
+: CapureErrorAndWait and CaptureError are two methods that we can use to do this but in most cases I think we'd want to use CaptureError since it isn't blocking
 
 : There's also a CapturePanic functioin that you can use and if a panic occurs in your code it gets logged to Sentry and then your program continues running
 
@@ -88,8 +93,7 @@ Sentry
 
 
 : All of the capture functions provided by the API accept additional arguments for passing a map of tags and context data. We can use tags to catagorise errors and provide more information about the errors that happened. 
-: We can also record breadcrumbs which is the trail of events that happen before an error occurs. Breadcrumbs are different from directly recording events in that they're buffered until we send the next event which gives can give us even more context around why an error happened. It doesn't look like there's a high level method for sending Breadcrumbs with the Go API yet but there is a lower level type exposed for sending messages to Sentry that all the higher level methods seem to use.
-: Seems like the breadcrumbs would be most useful for the FE side of things though because you're able record the users interaction so you can record the clicks and inputs that to a page before an error happened.
+: We can also record breadcrumbs which is the trail of events that happen before an error occurs. Breadcrumbs are different from directly recording events in that they're buffered until we send the next event which gives can give us even more context around why an error happened. 
 
 
 : Very frontend specific example but we could also submit custom tags to provide more context so customer_id or tag by machine to see if a specific server is having issues
@@ -98,6 +102,19 @@ Sentry
 
 
 
+
+
+
+# Slide
+* Breadcrumbs
+
+.image img/recording_breadcrumbs.png
+
+
+
+: So I think breadcrumbs would be useful on the frontend because we could record what the user does and build up everything that they've done before they encounter an error and then when they encounter the error all that information can be sent to Sentry along with the error which makes debugging why the error occured much easier because you have so much more informaation to work with compared to just seeing a log with an error message.
+
+: The JavaScript SDK will also automatically record some breadcrumbs so you don't have to litter your code manually recording breadcrumbs. For example one of the breadcrumbs that it automatically records is all location changes
 
 
 
