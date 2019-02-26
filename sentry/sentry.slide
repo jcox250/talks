@@ -139,56 +139,6 @@ Sentry
 
 
 
-# Slide
-* Monitoring Interface
-
-    type ExceptionMonitor interface {
-        CaptureError(error)
-        CapturePanic(func())
-        CaptureMessage(string)
-    }
-
-    type Sentry struct {
-        client *raven.Client
-        tags map[string]string
-    }
-
-    func NewSentry(dsn string, tags map[string]string) *Sentry {
-        return &Sentry{
-            client: raven.NewClient(dsn),
-            tags: tags,
-        }
-    }
-
-
-
-
-
-
-# Slide
-* Extend/Add New Logger Implementation
-
-    type Implementation struct {
-        Logger *logrus.Entry
-        sentry *raven.Client
-        tags map[string]string
-    }
-
-    func (i *Implementation) Log(s string, data map[string]interface{}) {
-        // Normal logging logic
-        i.sentry.CaptureMessage(s, i.tags) 
-    }
-
-    func (i *Implementation) LogError(s string, data map[string]interface{}) {
-        // Normal logging logic
-        i.sentry.CaptureError(s, i.tags) 
-    }
-
-
-
-
-
-
 
 
 
