@@ -317,7 +317,8 @@ Webhooks
 # Slide
 * Github
 
-- Linking to repos
+- Link Errbit app to repo
+- Link Errbit user to github account
 
 : The extent of the Github integration seems to be the ability to add a link to a repo to an app on Errbit and linking a users account to their github account.
 : So whenever you're viewing the app on errbit you can easily view to the repo by following the link.
