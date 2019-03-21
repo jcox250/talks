@@ -2,8 +2,8 @@ Error Monitoring Tools
 
 * What are error monitoring tools?
 
-- Error monitoring tools are something that we can use to get better visibility and context around what's going wrong with our applications during runtime rather than only being able to look at the logs and then we're at the mercy of the quality of our logging when it comes to actually trying to debug what went wrong from looking at the logs.
-- They usually work via an SDK that we can use to hook into our apps runtime which we can use to manually send events off to our error monitoring tool say when err != nil. Or the SDK can also send events off for us when an unexpected error occurs say a panic.
+: Error monitoring tools are something that we can use to get better visibility and context around what's going wrong with our applications during runtime rather than only being able to look at the logs and then we're at the mercy of the quality of our logging when it comes to actually trying to debug what went wrong from looking at the logs.
+: They usually work via an SDK that we can use to hook into our apps runtime which we can use to manually send events off to our error monitoring tool say when err != nil. Or the SDK can also send events off for us when an unexpected error occurs say a panic.
 
 
 * What tools are there?
@@ -25,7 +25,7 @@ Error Monitoring Tools
 - Source Maps
 - Stack Traces
 - Aggregate errors
-- Can display source code that's been compressed/minified or transpiled
+- Display minified/compressed source code
 - Dashboards
 
 : Has an offical Go SDK that hooks into our apps runtime environment. It also has SDKs for a wide range of languages or frameworks which seems like a benefit because it doesn't tie us in to any one specific language and if for some reason we needed to write something that wasn't in Go there's a strong chance Sentry has an SDK for whatever language we want to choose.
@@ -104,10 +104,11 @@ Error Monitoring Tools
 .code code/http-examples/http-panic-wrap.go /START OMIT/,/END OMIT/ HLraven
 
 
+: Talk about code
 
 
 # Slide
-*
+* 
 
 .image img/stacktrace_panic.png
 
@@ -170,8 +171,7 @@ Webhooks
 * Github Integration
 
 - Release tracking
-- Link to GitHub issues
-- Deploy emails
+- Deployment notifications
 - Suggested assignees for errors based on commit history
 - Can resolve issues on Sentry by including the ID in your commit message
 
@@ -187,7 +187,7 @@ Webhooks
 * Jira Integration
 
 - Create Jira issues from Sentry issues
-- Synchronisation between comments, assigneess and status updates
+- Synchronisation between comments, assignees and status updates
 
 : Whenever a new issue pops up in Sentry we can create a Jira ticket from it by clicking a button in Sentry
 : Comments, assigness and ticket status are synchronised across Jira and Sentry for us
@@ -201,9 +201,10 @@ Webhooks
 # Slide
 * Pager Duty Integration
 
-- Sentry can send alerts for issues to pager duty
+- Ability to send alerts to PagerDuty
 
-: Any issues that Sentry gets can be forwarded on to Pager Duty
+: Any issues that happen can be forwarded on to paer duty. 
+: This isn't something that we would want to do for every error but if we could set an acceptable error rate and then if our error rate on sentry went over the threashold we could send an alert to PagerDuty
 
 
 
@@ -330,6 +331,6 @@ Webhooks
 # Slide
 * Pricing
 
-- Errbit is free to use
+- $0
 
 : Completely free to use so you only have the cost of whatever server you're running it on
