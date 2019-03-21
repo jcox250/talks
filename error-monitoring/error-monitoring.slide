@@ -242,7 +242,6 @@ Webhooks
 - Multiple users
 - Airbrake API compliant
 - Group & merge errors
-- Shows user information in error reports
 - RightScale Lib/Goa integration
 
 
