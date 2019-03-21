@@ -11,7 +11,7 @@ Error Monitoring Tools
 - Errbit
 - Sentry
 
-- There are a few different error monitoring tools/solutions available, ranging from paid services to free tools that you host yourself. They all roughly have the same features, the only difference between them is some features are more fleshed out in some of them compared to the others.
+: There are a few different error monitoring tools/solutions available, ranging from paid services to free tools that you host yourself. They all roughly have the same features, the only difference between them is some features are more fleshed out in some of them compared to the others.
 
 
 # Slide
@@ -20,7 +20,6 @@ Error Monitoring Tools
 * Features
 
 - Hosted and self hosted options
-- Official Docker Image
 - Official Go SDK
 - Source Maps
 - Stack Traces
@@ -28,8 +27,8 @@ Error Monitoring Tools
 - Display minified/compressed source code
 - Dashboards
 
+: You can choose between a hosted solution or you can roll your own. So if you don't want to bother with the hassel of setting up and maintaining a server running sentry you can set up a hosted account and get an app running and reporting errors very quickly. Took me around 15 mins.
 : Has an offical Go SDK that hooks into our apps runtime environment. It also has SDKs for a wide range of languages or frameworks which seems like a benefit because it doesn't tie us in to any one specific language and if for some reason we needed to write something that wasn't in Go there's a strong chance Sentry has an SDK for whatever language we want to choose.
-: You can choose between a hosted solution or you can roll your own. So if you don't want to bother with the hassel of setting up and maintaining an instance you can set up a hosted account and get an app running and reporting errors very quickly. Took me around 15 mins.
 : Source code is shown in the stack traces so you can view the code that threw the error in Sentry rather than having to reference logs and code in your editor 
 : You can also filter to show just the app stack trace or the entire stack trace. So if you're using a lot of third party libs or a framework and don't want to have to filter through all the noise when trying to see what went wrong in your app you can get rid of it with the click of a button
 : It's also able to display source code that's been minified/compressed or transpiled which seems like it would be useful for error monitoring on the frontend
