@@ -1,12 +1,12 @@
 Error Monitoring Tools
 
-* What are error monitoring tools?
+* What are they
 
-: Error monitoring tools are something that we can use to get better visibility and context around what's going wrong with our applications during runtime rather than only being able to look at the logs and then we're at the mercy of the quality of our logging when it comes to actually trying to debug what went wrong from looking at the logs.
-: They usually work via an SDK that we can use to hook into our apps runtime which we can use to manually send events off to our error monitoring tool say when err != nil. Or the SDK can also send events off for us when an unexpected error occurs say a panic.
+: Error monitoring tools are something that we can use to get better visibility and context around what's going wrong with our applications during runtime rather than only being able to look at the logs and then we're at the mercy of the quality of our logs when it comes to debugging
+: They work via an SDK that we can use to hook into our apps runtime which we can use to manually send events off to our error monitoring tool say when err != nil. Or the SDK can also send events off for us when an unexpected error occurs say a panic.
 
 
-* What tools are there?
+* What tools are there
 
 - Errbit
 - Sentry
@@ -42,8 +42,8 @@ Error Monitoring Tools
 
 
 : So this is a list of all the SDKs that are officially maintained by the Sentry team
-: So as well as a Go SDK there are also offical React and C# SDKs. Our FE in Belfast have already been using Sentry and the fact that it has a C# SDK means that any teams in Flexera still using C# would be able to use it to and we would have a unified Error Monitoring solution.
-: Pytohn/Django SDK also means we would be able to easily integrate it with any of our existing Python services.
+: So as well as a Go SDK there are also official React and C# SDKs. Our FE in Belfast have already been using Sentry and the fact that it has a C# SDK means that any teams in Flexera still using C# would be able to use it to and we would have a unified Error Monitoring solution.
+: Python/Django SDK also means we would be able to easily integrate it with any of our existing Python services.
 
 
 
