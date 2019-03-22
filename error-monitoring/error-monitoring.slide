@@ -1,8 +1,11 @@
 Error Monitoring Tools
 
+: So a few weeks ago there was spike in one of our sprints to look into error monitoring tools and do a comparrison between a couple of them. So I've prepped a few slides on what an error monitoring tool is and why we might want to use one as well as a look at two different tools.
+
 * What are they
 
 : Error monitoring tools are something that we can use to get better visibility and context around what's going wrong with our applications during runtime rather than only being able to look at the logs and then we're at the mercy of the quality of our logs when it comes to debugging
+: And hopefully the better visibility and context that we get from using them should help us find and fix bugs faster.
 : They work via an SDK that we can use to hook into our apps runtime which we can use to manually send events off to our error monitoring tool say when err != nil. Or the SDK can also send events off for us when an unexpected error occurs say a panic.
 
 
@@ -100,7 +103,7 @@ Error Monitoring Tools
 # Slide
 * Example
 
-.code code/http-examples/http-panic-wrap.go /START OMIT/,/END OMIT/ HLraven
+.code -numbers code/http-examples/http-panic-wrap.go /START OMIT/,/END OMIT/ HLraven
 
 
 : Talk about code
@@ -117,7 +120,7 @@ Error Monitoring Tools
 # Slide
 * Goa Example
 
-.code code/goa-examples/raven-capture-panic.go /START OMIT/,/END OMIT/ HLmonitor
+.code -numbers code/goa-examples/raven-capture-panic.go /START OMIT/,/END OMIT/ HLmonitor
 
 
 
@@ -230,7 +233,8 @@ Webhooks
 * Errbit
 
 
-: So this section is quite a bit shorter than the Sentry one mainly because the documentation for Errbit pretty much consists of a not overly in depth README especially compared to the Sentry docs/marketing which is I guess is probably due to one of them being a commercial company with people paid to work on marketing and docs and the other being open source that only has peopple dedicating their free time to it.
+: So this section is quite a bit shorter than the Sentry one mainly because the documentation for Errbit pretty much consists of a not overly in depth README especially compared to the Sentry docs/marketing.
+: Which is probably due to one of them being a commercial company with people paid to work on marketing and docs and the other being open source that only has peopple dedicating their free time to it.
 
 
 
@@ -245,10 +249,10 @@ Webhooks
 - RightScale Lib/Goa integration
 
 
-: With Errbit there's no hosted option so we'd have to setup and maintain our own instance but RightScale have some automation scripts for bringing up an errbit instance and from speaking to Kannan it doesn't sound like they ever really have issues with maintaining and looking after it.
+: With Errbit there's no hosted option so we'd have to setup and maintain your own Errbit server but RightScale have some automation scripts for bringing up an errbit server and from speaking to Kannan it doesn't sound like they ever really have issues with maintaining and looking after it.
 : Like Sentry it provides a stack trace of errors/panics that occur in your application 
 : You can add multiple users and have users 'watching' certain apps so that they get notifcations whenever there's an error. Although you aren't able to assign users to issues the same way you can with Sentry
-: It's airbrake API compliant which is handy if you're already using Airbrake which we aren't
+: It's airbrake API complaint so if we ever wanted to use Airbrake in the future we could
 : Like Sentry if the same error occurs multiple times rather than logging each one as individual events it groups them all under the one event. You can also manually merge errors in the UI that you feel should be related.
 : We're also able to configure how errbit decides to group error messages. It has some default settings that we can easily configure/override depending on our preference. 
 : RightScale have been using Errbit for error monitoring and so they already have a Go package that can be used with Errbit and that integrates with Goa.
@@ -320,7 +324,6 @@ Webhooks
 
 : The extent of the Github integration seems to be the ability to add a link to a repo to an app on Errbit and linking a users account to their github account.
 : So whenever you're viewing the app on errbit you can easily view to the repo by following the link.
-: But from what I've been able to find on it I think it's fair to say that it doens't have anywhere near the depth of GitHub integration that Sentry has.
 : But I think it's fair to say from what I've been able to find that it doesn't have the same level of integration that Sentry has we're you're able to track commits and releases and resolve issues by tagging them in your git commits
 
 
