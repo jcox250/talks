@@ -52,7 +52,7 @@ Errbit
 - Shows user information in error reports
 
 
-: No hosted option so we'd have to setup and maintain our own instance but there's an official docker image.
+: No hosted option so we'd have to setup and maintain our own instance but RightScale have some automation scripts for bringing up an errbit instance and from speaking to Kannan it doesn't sound like they ever really have issues with maintaining and looking after it.
 : Provides a stack trace of errors/panics that occur so it's easier to track them down. 
 : You can add multiple users and have users 'watching' certain apps so that they get notifcations whenever there's an error. Although you aren't able to assign users to issues the same way you can with Sentry
 : It's airbrake API compliant which is handy if you're already using Airbrake which we aren't
@@ -77,7 +77,9 @@ Errbit
 .image img/microv2_errbit_api.png
 
 
-: Rightscale have a repo with a bunch of helper packages for building goa service and one of these is an errbit package so we would just be able to use this rather than having to write our own library around the Sentry Go SDK.
+: So RightScale have been using Errrbit for over 5 years 
+: They've got an errbit package in their version of tp-common for building microservices that has a bunch of functions for logging and sending messages to Errbit
+: When they started using Errbit they didn't really look into other solutions because they had a core contributor on the team and there wasn't really the range of error monitoring solutions that there are now.
 : Although I do think there are some downsides to us using this library one of which is it has a dependency on Goa. So if we did go with Errbit and wanted to use this library in already existingservices we'd be pulling down Goa as a dependency even though the service doesn't use Goa. 
 
 
@@ -95,6 +97,7 @@ Errbit
 
 
 : Like Sentry which lets us wrap middleware around our handlers the errbit library that RightScale have also lets us add middleware and it already integrates with Goa. 
+: Screenshots are of code from the snooze app
 
 
 
@@ -128,7 +131,8 @@ Errbit
 : The extent of the Github integration seems to be the ability to add a link to a repo to an app on Errbit. So whenever you're viewing the app on errbit you can easily jump to the repo. Or you're able to add a link to a user so that you can jump to their GitHub account. But it doesn't have the same level of integration that Sentry has we're you're able to track commits and releases and resolve issues by tagging them in your git commits
 : It has webhooks so we setup Teams notifications in a channel for it
 : No Jira integration whereas in Sentry we would be able to create Jira tickets from issues in Sentry and have them marked as resolved when our Jira ticket is marked as done
-: No featured PagerDuty integration but I don't know if there's a way that you can just use a webhook or not with pager duty
+: No featured PagerDuty integration but I don't know if there's a way that you can just use a webhook or not with pager duty but talking to Kannan he said that you could have an error rate alert on prometheus that would alert pager duty if your error rate on errbit got over a certain threshold
+
 
 
 
@@ -137,7 +141,7 @@ Errbit
 # Slide
 * Pricing
 
-- Free
+- Errbit is free to use
 
 : Completely free to use so you only have the cost of whatever server you're running it on 
 

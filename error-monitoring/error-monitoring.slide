@@ -1,0 +1,338 @@
+Error Monitoring Tools
+
+: So a few weeks ago there was spike in one of our sprints to look into error monitoring tools and do a comparrison between a couple of them. So I've prepped a few slides on what an error monitoring tool is and why we might want to use one as well as a look at two different tools.
+
+* What are they
+
+: Error monitoring tools are something that we can use to get better visibility and context around what's going wrong with our applications during runtime rather than only being able to look at the logs and then we're at the mercy of the quality of our logs when it comes to debugging
+: And hopefully the better visibility and context that we get from using them should help us find and fix bugs faster.
+: They work via an SDK that we can use to hook into our apps runtime which we can use to manually send events off to our error monitoring tool say when err != nil. Or the SDK can also send events off for us when an unexpected error occurs say a panic.
+
+
+* What tools are there
+
+- Errbit
+- Sentry
+
+: There are a few different error monitoring tools/solutions available, ranging from paid services to free tools that you host yourself. They all roughly have the same features, the only difference between them is some features are more fleshed out in some of them compared to the others.
+
+
+# Slide
+* Sentry
+
+* Features
+
+- Hosted and self hosted options
+- Official Go SDK
+- Source Maps
+- Stack Traces
+- Aggregate errors
+- Display minified/compressed source code
+- Dashboards
+
+: You can choose between a hosted solution or you can roll your own. So if you don't want to bother with the hassel of setting up and maintaining a server running sentry you can set up a hosted account and get an app running and reporting errors very quickly. Took me around 15 mins.
+: Has an offical Go SDK that hooks into our apps runtime environment. It also has SDKs for a wide range of languages or frameworks which seems like a benefit because it doesn't tie us in to any one specific language and if for some reason we needed to write something that wasn't in Go there's a strong chance Sentry has an SDK for whatever language we want to choose.
+: Source code is shown in the stack traces so you can view the code that threw the error in Sentry rather than having to reference logs and code in your editor 
+: You can also filter to show just the app stack trace or the entire stack trace. So if you're using a lot of third party libs or a framework and don't want to have to filter through all the noise when trying to see what went wrong in your app you can get rid of it with the click of a button
+: It's also able to display source code that's been minified/compressed or transpiled which seems like it would be useful for error monitoring on the frontend
+
+
+
+# Slide
+* Official SDKs
+
+.image img/sentry_official_sdks.png
+
+
+: So this is a list of all the SDKs that are officially maintained by the Sentry team
+: So as well as a Go SDK there are also official React and C# SDKs. Our FE in Belfast have already been using Sentry and the fact that it has a C# SDK means that any teams in Flexera still using C# would be able to use it to and we would have a unified Error Monitoring solution.
+: Python/Django SDK also means we would be able to easily integrate it with any of our existing Python services.
+
+
+
+
+# Slide
+* Community supported SDKs
+
+.image img/sentry_community_sdks.png
+
+: And then this is a list of the community supported SDKs and there's a Kubernetes one which could be useful given it seems like we're going to end up using kubernetes?
+
+
+
+# Slide
+* How we can use it
+
+.link https://docs.sentry.io/clients/go/usage/ Capturing errors, panics and events
+.image img/capture_error_doc.png
+.image img/capture_panic_doc.png
+
+: One of the ways that we can use it is to manually report errors. So whenever an error occurs we can log it to Sentry which creates a new issue group or adds the issue to an existing group if the error has already occured and been logged to sentry which allows us to see how many times the same error has happened.
+: CapureErrorAndWait and CaptureError are two methods that we can use to do this but in most cases I think we'd want to use CaptureError since it isn't blocking
+: There's also a CapturePanic functioin that you can use and if a panic occurs in your code it gets logged to Sentry and then your program continues running
+
+
+
+# Slide
+* Enriching Error Data
+
+.link https://docs.sentry.io/clients/go/context/ Add context to errors
+.link https://sentry.io/organizations/flexera/discover/ Filter based on tags
+.link https://sentry.io/features/breadcrumbs/ Breadcrumbs
+.image img/tags_example.png
+
+
+: All of the capture functions provided by the API accept additional arguments for passing a map of tags and context data. We can use tags to catagorise errors and provide more information about the errors that happened.
+: We can also record breadcrumbs which is the trail of events that happen before an error occurs. Breadcrumbs are different from directly recording events in that they're buffered until we send the next event which gives can give us even more context around why an error happened.
+: Very frontend specific example but we could also submit custom tags to provide more context so customer_id or tag by machine to see if a specific server is having issues
+: Tags give us a way to group/aggregate and search for bugs/issues in the Sentry UI easily
+
+
+
+# Slide
+* Breadcrumbs
+
+.image img/recording_breadcrumbs.png
+
+
+: So I think breadcrumbs would be useful on the frontend because we could record what the user does and build up everything that they've done before they encounter an error and then when they encounter the error all that information can be sent to Sentry along with the error which makes debugging why the error occured much easier because you have so much more informaation to work with compared to just seeing a log with an error message.
+: The JavaScript SDK will also automatically record some breadcrumbs so you don't have to litter your code manually recording breadcrumbs. For example one of the breadcrumbs that it automatically records is all location changes
+
+
+
+# Slide
+* Example
+
+.code -numbers code/http-examples/http-panic-wrap.go /START OMIT/,/END OMIT/ HLraven
+
+
+: Talk about code
+
+
+# Slide
+* 
+
+.image img/stacktrace_panic.png
+
+
+
+
+# Slide
+* Goa Example
+
+.code -numbers code/goa-examples/raven-capture-panic.go /START OMIT/,/END OMIT/ HLmonitor
+
+
+
+
+# Slide
+* Stack Traces
+
+.image img/stacktrace_1.png 600 700
+
+: So when you do get errors whenever you click on them you can view the stack trace and you can choose betweeen viewing the entire stack trace which will show a stack trace for
+your framework and third party lib files as well as any of your apps stack that was touched. But you can also filter it to show only your app code to make it even easier to see which parts of your code went wrong.
+
+
+
+
+# Slide
+* 
+
+.image img/stacktrace_2.png
+
+
+
+
+# Slide
+* 
+
+.image img/sentry_dashboard.png
+
+
+: https://sentry.io/organizations/flexera/dashboards/?project=1396608&statsPeriod=14d&utc=false
+
+
+
+
+# Slide
+* Integration
+
+.link https://sentry.io/integrations/github/ GitHub/GitHub Enterprise
+.link https://sentry.io/integrations/jira/ Jira
+.link https://sentry.io/integrations/pagerduty/ Pager Duty
+Webhooks
+
+: Currently has integration for Gituhub, Jira, Pager Duty and Teams.
+: Can setup teams notifications using a webhook
+: You can also configure email notifications to come through whenever bad things happen
+
+
+
+
+* Github Integration
+
+- Release tracking
+- Deployment notifications
+- Suggested assignees for errors based on commit history
+- Can resolve issues on Sentry by including the ID in your commit message
+
+: You can get alerts whenever a deployment introduces an error
+: It will suggest who the issue should be assigned to based (assuming this is based on the name associated with the commit that caused the issue)
+: Whenever issues are resolved you can add the Sentry issue ID to your commit message to mark it as resolved
+
+
+
+
+
+# Slide
+* Jira Integration
+
+- Create Jira issues from Sentry issues
+- Synchronisation between comments, assignees and status updates
+
+: Whenever a new issue pops up in Sentry we can create a Jira ticket from it by clicking a button in Sentry
+: Comments, assigness and ticket status are synchronised across Jira and Sentry for us
+: Resolving an issue in Sentry will mark it as resolved in Jira and vice versa
+
+
+
+
+
+
+# Slide
+* Pager Duty Integration
+
+- Ability to send alerts to PagerDuty
+
+: Any issues that happen can be forwarded on to paer duty. 
+: This isn't something that we would want to do for every error but if we could set an acceptable error rate and then if our error rate on sentry went over the threashold we could send an alert to PagerDuty
+
+
+
+
+
+# Slide
+* Pricing & Limits
+
+- Developer - free
+- Team - $26/month 100k, 500k, 1.5M 3M+ events a month
+- Business - $80/month 100k, 500k, 1.5M 3M+ events a month
+- Enterprise (Contact them)
+
+.link https://sentry.io/pricing/ pricing and limits
+
+
+: Seem to be able to prepurchase the amount of events you think you'll use a month.
+: Then if you go over this amount you can still keep recieving events but you pay for them on demand
+
+
+
+
+# Slide
+* Errbit
+
+
+: So this section is quite a bit shorter than the Sentry one mainly because the documentation for Errbit pretty much consists of a not overly in depth README especially compared to the Sentry docs/marketing.
+: Which is probably due to one of them being a commercial company with people paid to work on marketing and docs and the other being open source that only has peopple dedicating their free time to it.
+
+
+
+# Slide
+* Features
+
+- Self Hosted (Rails app & Mongo)
+- Stack traces
+- Multiple users
+- Airbrake API compliant
+- Group & merge errors
+- RightScale Lib/Goa integration
+
+
+: With Errbit there's no hosted option so we'd have to setup and maintain your own Errbit server but RightScale have some automation scripts for bringing up an errbit server and from speaking to Kannan it doesn't sound like they ever really have issues with maintaining and looking after it.
+: Like Sentry it provides a stack trace of errors/panics that occur in your application 
+: You can add multiple users and have users 'watching' certain apps so that they get notifcations whenever there's an error. Although you aren't able to assign users to issues the same way you can with Sentry
+: It's airbrake API complaint so if we ever wanted to use Airbrake in the future we could
+: Like Sentry if the same error occurs multiple times rather than logging each one as individual events it groups them all under the one event. You can also manually merge errors in the UI that you feel should be related.
+: We're also able to configure how errbit decides to group error messages. It has some default settings that we can easily configure/override depending on our preference. 
+: RightScale have been using Errbit for error monitoring and so they already have a Go package that can be used with Errbit and that integrates with Goa.
+: You're able to get information on the users environment alongside any errors that occur which we can get for free by making use of RightScales library.
+
+
+
+
+# Slide
+* How we can use it
+
+.link https://github.com/rightscale/microv2/tree/master/errbit RightScale microv2
+
+.image img/microv2_errbit_api.png
+
+
+: So as mentioed previously RightScale have a library that we can use with Errbit already and it integrates with Goa.
+: The library gives us methods for creating and sending notices to Errbit. Notices are the messages that get sent to errbit with the error that occured.
+: The library does have a dependency on Goa though which means that if we ever wanted to use this library on one of our existing non Goa services we have to import Goa as a dependency of that service.
+
+
+
+
+# Slide
+* 
+
+.image img/errbit_mw_def.png
+.image img/errbit_mw_impl.png
+
+
+: And then again like Sentry the RightScale library provides us with middleware that we can wrap around our http handlers 
+: Screenshots are of code from the snooze repo
+
+
+
+
+# Slide
+* Stacktrace
+
+
+.image img/errbit_stacktrace.png 250 700
+
+: Whenever errors are logged the stacktrace is also sent up so you can easily see where the error occured
+
+
+
+
+
+# Slide
+* Integration
+
+- Github
+- Webhooks
+
+
+
+: You can setup webhooks with it so we can get Teams notifications so it's exactly the same as Sentry in that regard.
+: It also has some level of Github integration but no where near the depth that Sentry has.
+: It doens't have any Jira integration whereas in Sentry we would be able to create Jira tickets from issues in Sentry and have them marked as resolved when our Jira ticket is marked as done
+: Also doens't have any PagerDuty integration but from speaking to Kannan he said if this is something we wanted we could set up PagerDuty to send out an alert if the error rate for an applicaion in Errbit reached a certain threshold
+
+
+
+# Slide
+* Github
+
+- Link Errbit app to repo
+- Link Errbit user to github account
+
+: The extent of the Github integration seems to be the ability to add a link to a repo to an app on Errbit and linking a users account to their github account.
+: So whenever you're viewing the app on errbit you can easily view to the repo by following the link.
+: But I think it's fair to say from what I've been able to find that it doesn't have the same level of integration that Sentry has we're you're able to track commits and releases and resolve issues by tagging them in your git commits
+
+
+
+
+
+# Slide
+* Pricing
+
+- $0
+
+: Completely free to use so you only have the cost of whatever server you're running it on
